@@ -1,0 +1,6 @@
+streamlit
+matplotlib
+requests
+bs4
+wordcloud
+collections
