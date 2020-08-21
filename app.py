@@ -37,8 +37,11 @@ def main():
     st.write("Insert the URL containing the decklists.")
     st.write("You can find them here: https://magic.wizards.com/en/content/deck-lists-magic-online-products-game-info")
 
+    # Working example to start the app.
     default_url = 'https://magic.wizards.com/en/articles/archive/mtgo-standings/modern-challenge-2020-08-16'
+    # Input box
     url = st.text_input('URL: ', default_url)
+    # Preventing some malicious use.
     valid_url = url.startswith('https://magic.wizards.com/')
     
     if not valid_url:
@@ -46,7 +49,8 @@ def main():
     if valid_url:
         try:
             build_wordcloud(url)
-            st.pyplot()
+            # Without these options the figure has an annoying white border.
+            st.pyplot(transparent=True, bbox_inches='tight', pad_inches=0)
         except ValueError:
             st.write('The URL does not contain decklists or they changed the layout.')
 
@@ -92,6 +96,7 @@ def build_wordcloud(url):
         color_to_words[color] = cards
 
     # Assign a specific RGB color for each of the MTG colors.
+    # I took these from the original mana symbols.
     color_to_words['#fcfcc1'] = color_to_words.pop('white')
     color_to_words['#67c1f5'] = color_to_words.pop('blue')
     color_to_words['#846484'] = color_to_words.pop('black')
@@ -112,8 +117,9 @@ def build_wordcloud(url):
 
     cloud = WordCloud(
         background_color='black',
-        width=1600,
-        height=900,
+        width=400,
+        height=250,
+        scale=5,
         ).generate_from_frequencies(card_counter)
 
     # Apply the chosen colors to the wordcloud.
@@ -122,7 +128,7 @@ def build_wordcloud(url):
 
     # Plot the cloud to matplotlib.
     # Normally, you'd call plt.show() to show the plot.
-    plt.figure(figsize = (32,18))
+    plt.figure(figsize = (16,9))
     plt.imshow(cloud)
     plt.axis("off")
 
