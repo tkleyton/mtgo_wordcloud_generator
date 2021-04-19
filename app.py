@@ -2,6 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 from wordcloud import WordCloud
 from collections import Counter
 
@@ -33,12 +34,18 @@ class SimpleGroupedColorFunc(object):
 
 
 def main():
+    decklists_url = "https://magic.wizards.com/en/content/deck-lists-magic-online-products-game-info"
     st.header('MTGO Decklists - Wordcloud Generator')
     st.write("Insert the URL containing the decklists.")
-    st.write("You can find them here: https://magic.wizards.com/en/content/deck-lists-magic-online-products-game-info")
+    st.write(f"You can find them here: {decklists_url}")
 
     # Working example to start the app.
-    default_url = 'https://magic.wizards.com/en/articles/archive/mtgo-standings/modern-challenge-2020-08-16'
+    decklists_data = requests.get(decklists_url)
+    decklists_soup = BeautifulSoup(decklists_data.content, 'html.parser')
+
+    base_url = 'https://magic.wizards.com'
+    default_url = urljoin(base_url, decklists_soup.select_one("a[href*=modern-challenge]")['href'])
+    # default_url = 'https://magic.wizards.com/en/articles/archive/mtgo-standings/modern-challenge-2020-08-16'
     # Input box
     url = st.text_input('URL: ', default_url)
     # Preventing some malicious use.
@@ -48,9 +55,9 @@ def main():
         st.write('Insert a valid URL from the official mtgo-standings.')
     if valid_url:
         try:
-            build_wordcloud(url)
+            fig = build_wordcloud(url)
             # Without these options the figure has an annoying white border.
-            st.pyplot(transparent=True, bbox_inches='tight', pad_inches=0)
+            st.pyplot(fig, transparent=True, bbox_inches='tight', pad_inches=0)
         except ValueError:
             st.write('The URL does not contain decklists or they changed the layout.')
 
@@ -128,10 +135,12 @@ def build_wordcloud(url):
 
     # Plot the cloud to matplotlib.
     # Normally, you'd call plt.show() to show the plot.
-    plt.figure(figsize = (16,9))
+    fig = plt.figure(figsize = (16,9))
     plt.imshow(cloud)
     plt.axis("off")
+    return fig
 
 
 if __name__ == '__main__':
     main()
+

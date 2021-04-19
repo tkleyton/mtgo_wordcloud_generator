@@ -5,6 +5,7 @@ I figured it would be convenient to have a quicker way to assess the cards you s
 A WordCloud seemed like a good visualization of those results.
 
 This [Streamlit](https://www.streamlit.io/) app is a quick prototype so that anyone can generate their own WordCloud.  
+This app is hosted on Heroku from this repo: <https://mtgo-wordcloud.herokuapp.com/>  
 Just plug the URL and you're good to go.
 
 ## Running locally
