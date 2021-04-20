@@ -44,7 +44,11 @@ def main():
     decklists_soup = BeautifulSoup(decklists_data.content, 'html.parser')
 
     base_url = 'https://magic.wizards.com'
-    default_url = urljoin(base_url, decklists_soup.select_one("a[href*=modern-challenge]")['href'])
+    modern_url = decklists_soup.select_one("a[href*=modern-challenge]")
+    if not modern_url:
+        modern_url = decklists_soup.select_one("a[href*=modern-preliminary]")
+
+    default_url = urljoin(base_url, modern_url.get('href'))
     # default_url = 'https://magic.wizards.com/en/articles/archive/mtgo-standings/modern-challenge-2020-08-16'
     # Input box
     url = st.text_input('URL: ', default_url)
